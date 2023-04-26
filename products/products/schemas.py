@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields
 
 
-class Product(Schema):
+class ProductSchema(Schema):
     id = fields.Str(required=True)
     title = fields.Str(required=True)
     passenger_capacity = fields.Int(required=True)

@@ -15,7 +15,11 @@ def test_config(rabbit_config):
 
 @pytest.yield_fixture
 def redis_client(test_config):
-    client = redis.StrictRedis.from_url(config.get(REDIS_URI_KEY))
+    client = redis.StrictRedis.from_url(
+        config.get(REDIS_URI_KEY),
+        encoding='utf-8',
+        decode_responses=True
+    )
     yield client
     client.flushdb()
 

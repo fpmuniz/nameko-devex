@@ -55,12 +55,12 @@ def test_create_product(product, redis_client, service_container):
 
     stored_product = redis_client.hgetall('products:LZ127')
 
-    assert product['id'] == stored_product[b'id'].decode('utf-8')
-    assert product['title'] == stored_product[b'title'].decode('utf-8')
-    assert product['maximum_speed'] == int(stored_product[b'maximum_speed'])
+    assert product['id'] == stored_product['id']
+    assert product['title'] == stored_product['title']
+    assert product['maximum_speed'] == int(stored_product['maximum_speed'])
     assert product['passenger_capacity'] == (
-        int(stored_product[b'passenger_capacity']))
-    assert product['in_stock'] == int(stored_product[b'in_stock'])
+        int(stored_product['passenger_capacity']))
+    assert product['in_stock'] == int(stored_product['in_stock'])
 
 
 @pytest.mark.parametrize('product_overrides, expected_errors', [
@@ -147,6 +147,6 @@ def test_handle_order_created(
     product_one, product_two, product_three = [
         redis_client.hgetall('products:{}'.format(id_))
         for id_ in ('LZ127', 'LZ129', 'LZ130')]
-    assert b'6' == product_one[b'in_stock']
-    assert b'9' == product_two[b'in_stock']
-    assert b'12' == product_three[b'in_stock']
+    assert '6' == product_one['in_stock']
+    assert '9' == product_two['in_stock']
+    assert '12' == product_three['in_stock']
