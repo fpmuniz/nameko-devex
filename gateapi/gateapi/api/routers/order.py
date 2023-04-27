@@ -41,7 +41,7 @@ def _get_order(order_id, nameko_rpc):
 
         item['product'] = product_map[product_id]
         # Construct an image url.
-        item['image'] = '{}/{}.jpg'.format(image_root, product_id)
+        item['image'] = f'{image_root}/{product_id}.jpg'
 
     return order
 
