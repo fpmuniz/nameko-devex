@@ -62,6 +62,9 @@ class StorageWrapper:
             self._format_key(product_id), 'in_stock', -amount
         )
 
+    def destroy(self, product_id):
+        return self.client.delete(self._format_key(product_id))
+
 
 class Storage(DependencyProvider):
 

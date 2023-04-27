@@ -35,6 +35,12 @@ class ProductsService:
     def create(self, product: Product):
         self.storage.create(product)
 
+    @rpc
+    def destroy(self, product_id):
+        product = self.storage.get(product_id)
+        self.storage.destroy(product_id)
+        return product
+
     @event_handler('orders', 'order_created')
     def handle_order_created(self, payload: dict):
         for product in payload['order']['order_details']:
