@@ -66,7 +66,7 @@ class GatewayService(object):
             # or `ValidationError` if data is invalid.
             product_data = schema.loads(request.get_data(as_text=True)).data
         except ValueError as exc:
-            raise BadRequest("Invalid json: {}".format(exc))
+            raise BadRequest(f'Invalid json: {exc}')
 
         # Create the product
         self.products_rpc.create(product_data)
@@ -108,17 +108,14 @@ class GatewayService(object):
         # raise``OrderNotFound``
         order = self.orders_rpc.get_order(order_id)
 
-        # Retrieve all products from the products service
-        product_map = {prod['id']: prod for prod in self.products_rpc.list()}
-
         # get the configured image root
         image_root = config['PRODUCT_IMAGE_ROOT']
 
         # Enhance order details with product and image details.
         for item in order['order_details']:
             product_id = item['product_id']
-
-            item['product'] = product_map[product_id]
+            product = self.products_rpc.get(product_id)
+            item['product'] = product
             # Construct an image url.
             item['image'] = f'{image_root}/{product_id}.jpg'
 
@@ -173,7 +170,7 @@ class GatewayService(object):
             # or `ValidationError` if data is invalid.
             order_data = schema.loads(request.get_data(as_text=True)).data
         except ValueError as exc:
-            raise BadRequest("Invalid json: {}".format(exc))
+            raise BadRequest(f'Invalid json: {exc}')
 
         # Create the order
         # Note - this may raise `ProductNotFound`
@@ -182,12 +179,10 @@ class GatewayService(object):
 
     def _create_order(self, order_data):
         # check order product ids are valid
-        valid_product_ids = {prod['id'] for prod in self.products_rpc.list()}
         for item in order_data['order_details']:
-            if item['product_id'] not in valid_product_ids:
-                raise ProductNotFound(
-                    "Product Id {}".format(item['product_id'])
-                )
+            product = self.products_rpc.get(item['product_id'])
+            if product is None:
+                raise ProductNotFound(f"Product Id {item['product_id']}")
 
         # Call orders-service to create the order.
         # Dump the data through the schema to ensure the values are serialized
