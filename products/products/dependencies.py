@@ -8,6 +8,8 @@ from products.schemas import ProductSchema
 
 REDIS_URI_KEY = 'REDIS_URI'
 
+Product = dict
+
 
 class StorageWrapper:
     """
@@ -28,22 +30,28 @@ class StorageWrapper:
     def _format_key(self, product_id: str) -> str:
         return f'products:{product_id}'
 
-    def _from_hash(self, document: dict) -> dict:
+    @classmethod
+    def from_dict(cls, document: dict) -> Product:
         return ProductSchema().dump(document).data
+
+    @classmethod
+    def to_dict(cls, product: Product) -> dict:
+        return ProductSchema(strict=True).load(product).data
 
     def get(self, product_id: str) -> dict:
         product = self.client.hgetall(self._format_key(product_id))
         if not product:
-            raise NotFound('Product ID {} does not exist'.format(product_id))
+            raise NotFound(f'Product ID {product_id} does not exist')
         else:
-            return self._from_hash(product)
+            return self.from_dict(product)
 
     def list(self):
         keys = self.client.keys(self._format_key('*'))
         for key in keys:
-            yield self._from_hash(self.client.hgetall(key))
+            yield self.from_dict(self.client.hgetall(key))
 
-    def create(self, product: dict):
+    def create(self, product: Product):
+        product = self.to_dict(product)
         self.client.hmset(
             self._format_key(product['id']),
             product
