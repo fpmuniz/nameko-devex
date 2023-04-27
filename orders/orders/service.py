@@ -69,5 +69,5 @@ class OrdersService:
 
     @rpc
     def list_orders(self):
-        orders = self.db.query(Order).all()
+        orders = self.db.query(Order).limit(10).all()
         return OrderSchema(many=True).dump(orders).data
