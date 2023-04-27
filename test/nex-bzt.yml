@@ -9,13 +9,11 @@ execution:
   ramp-up: 1m
   hold-for: 12h
   scenario: nex
-      
+
 scenarios:
   nex:
     data-sources:
     - ./test/nex-users.csv
-    variables:
-      hello: world
     default-address: http://localhost:8000
 
     requests:
@@ -109,11 +107,17 @@ scenarios:
       then:
         - action: continue
 
-    # 4. List Orders
+    # 5. List Orders
     - url: /orders/
       label: orders-list
       think-time: uniform(0s, 0s)
       method: GET
+
+    # 6. Delete Product
+    - url: /products/${product_id}
+      label: product-delete
+      think-time: uniform(0s, 0s)
+      method: DELETE
 
       assert:
       - contains:
@@ -121,7 +125,7 @@ scenarios:
         subject: http-code
         not: false
       extract-jsonpath:
-        order_id: $.id
+        product_key: $.id
         default: NOT_FOUND
 
 reporting:

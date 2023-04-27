@@ -57,3 +57,8 @@ curl -s "${STD_APP_URL}/orders/${ID}" | jq .
 echo "=== Getting orders ==="
 curl -s "${STD_APP_URL}/orders/" | jq .
 echo
+
+# Test: Delete product
+echo "=== Deleting product with id: the_odyssey ==="
+curl -s -XDELETE  "${STD_APP_URL}/products/the_odyssey" | jq .
+echo
