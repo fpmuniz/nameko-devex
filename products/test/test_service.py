@@ -145,7 +145,7 @@ def test_handle_order_created(
         dispatch('orders', 'order_created', payload)
 
     product_one, product_two, product_three = [
-        redis_client.hgetall('products:{}'.format(id_))
+        redis_client.hgetall(f'products:{id_}')
         for id_ in ('LZ127', 'LZ129', 'LZ130')]
     assert '6' == product_one['in_stock']
     assert '9' == product_two['in_stock']

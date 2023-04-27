@@ -57,7 +57,7 @@ def test_decrement_stock(storage, create_product, redis_client):
 
     assert 7 == in_stock
     product_one, product_two, product_three = [
-        redis_client.hgetall('products:{}'.format(id_))
+        redis_client.hgetall(f'products:{id_}')
         for id_ in (1, 2, 3)]
     assert '10' == product_one['in_stock']
     assert '7' == product_two['in_stock']

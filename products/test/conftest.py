@@ -41,7 +41,7 @@ def create_product(redis_client, product):
         new_product = product.copy()
         new_product.update(**overrides)
         redis_client.hmset(
-            'products:{}'.format(new_product['id']),
+            f'products:{new_product["id"]}',
             new_product)
         return new_product
     return create
