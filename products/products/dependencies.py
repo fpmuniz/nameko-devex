@@ -21,8 +21,8 @@ class StorageWrapper:
 
     NotFound = NotFound
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, client: redis.Redis):
+        self.client: redis.Redis = client
 
     def _format_key(self, product_id):
         return 'products:{}'.format(product_id)
@@ -56,6 +56,9 @@ class StorageWrapper:
     def decrement_stock(self, product_id, amount):
         return self.client.hincrby(
             self._format_key(product_id), 'in_stock', -amount)
+
+    def destroy(self, product_id):
+        return self.client.delete(self._format_key(product_id))
 
 
 class Storage(DependencyProvider):

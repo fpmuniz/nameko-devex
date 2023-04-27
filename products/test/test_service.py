@@ -40,7 +40,7 @@ def test_list_products(products, service_container):
     assert products == sorted(listed_products, key=lambda p: p['id'])
 
 
-def test_list_productis_when_empty(service_container):
+def test_list_products_when_empty(service_container):
 
     with entrypoint_hook(service_container, 'list') as list_:
         listed_products = list_()
@@ -61,6 +61,25 @@ def test_create_product(product, redis_client, service_container):
     assert product['passenger_capacity'] == (
         int(stored_product[b'passenger_capacity']))
     assert product['in_stock'] == int(stored_product[b'in_stock'])
+
+
+def test_destroy_product(products, redis_client, service_container):
+    product = products[0]
+
+    assert redis_client.hgetall(f'products:{product["id"]}') != {}
+
+    with entrypoint_hook(service_container, 'destroy') as destroy:
+        assert product == destroy(product['id'])
+
+    assert redis_client.hgetall(f'products:{product["id"]}') == {}
+
+
+def test_destroy_non_existing_product_fails(redis_client, service_container):
+    assert redis_client.hgetall('invalid_id') == {}
+
+    with pytest.raises(NotFound):
+        with entrypoint_hook(service_container, 'destroy') as delete:
+            assert delete('invalid_id') == {}
 
 
 @pytest.mark.parametrize('product_overrides, expected_errors', [
